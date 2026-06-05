@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=2.0">
+    <title>Быстрый калькулятор стоимости</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(150deg, #e9f0f8 0%, #cddcec 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .calculator {
+            background: #ffffff;
+            box-shadow: 0 30px 50px rgba(0, 20, 40, 0.2), 0 10px 25px rgba(0, 0, 0, 0.08);
+            border-radius: 40px;
+            padding: 32px 30px;
+            max-width: 580px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            transition: all 0.2s ease;
+            background: #ffffff;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0a3144;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        h1 span {
+            background: #1f4e6b;
+            color: white;
+            font-size: 0.95rem;
+            padding: 5px 16px;
+            border-radius: 40px;
+            letter-spacing: 0.3px;
+            font-weight: 500;
+        }
+
+        .subtitle {
+            color: #3a5a73;
+            margin-bottom: 24px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-left: 4px solid #1f5b7a;
+            padding-left: 14px;
+        }
+
+        .tariff-switch {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            background: #f1f6fc;
+            padding: 6px;
+            border-radius: 40px;
+            width: fit-content;
+        }
+
+        .tariff-btn {
+            padding: 10px 28px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1rem;
+            border: none;
+            background: transparent;
+            color: #2c5775;
+            cursor: pointer;
+            transition: 0.2s;
+            letter-spacing: 0.3px;
+        }
+
+        .tariff-btn.active {
+            background: #1b445d;
+            color: white;
+            box-shadow: 0 6px 14px rgba(11, 43, 68, 0.25);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #0f3448;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            letter-spacing: 0.2px;
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1.5px solid #cfdee9;
+            border-radius: 20px;
+            font-size: 1rem;
+            background: #f9fcff;
+            transition: 0.25s ease;
+            outline: none;
+            font-weight: 500;
+            color: #0b2b44;
+            background: #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        select:hover, input[type="number"]:hover {
+            border-color: #7b9fc0;
+        }
+
+        select:focus, input[type="number"]:focus {
+            border-color: #1e5a7a;
+            box-shadow: 0 0 0 3px rgba(30, 90, 122, 0.25);
+            background: #ffffff;
+        }
+
+        input:disabled, select:disabled {
+            background: #edf2f7;
+            color: #5f6c7a;
+            border-color: #d2dce6;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .km-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .km-select-wrap {
+            flex: 1 1 180px;
+            min-width: 150px;
+        }
+
+        .km-input-wrap {
+            flex: 1 1 200px;
+            min-width: 160px;
+        }
+
+        .mutual-hint {
+            font-size: 0.8rem;
+            color: #4a627a;
+            margin-top: 5px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .services-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #f4f8fd;
+            padding: 18px 18px;
+            border-radius: 26px;
+            margin-top: 6px;
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .service-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            color: #1a3b4f;
+        }
+
+        .counter {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            border-radius: 30px;
+            padding: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .counter button {
+            background: #e5edf5;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1e4a6b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            background: #ffffff;
+            border: 1px solid #cbdeef;
+            line-height: 1;
+        }
+
+        .counter button:hover {
+            background: #1e4a6b;
+            color: white;
+            border-color: #1e4a6b;
+        }
+
+        .counter button:active {
+            transform: scale(0.94);
+        }
+
+        .count-display {
+            min-width: 38px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #0b2b44;
+        }
+
+        .service-price {
+            background: #e1ecf5;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-weight: 700;
+            color: #0c4057;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .button-panel {
+            display: flex;
+            gap: 14px;
+            margin: 28px 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1 1 auto;
+            background: white;
+            border: none;
+            padding: 14px 18px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #1b445d;
+            color: white;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 16px rgba(11, 43, 68, 0.2);
+            border: 1px solid rgba(255,255,255,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-outline {
+            background: #ffffff;
+            color: #1b445d;
+            border: 1.5px solid #1b445d;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .btn:hover {
+            background: #0f3347;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline:hover {
+            background: #ebf2fa;
+            color: #0a2a3b;
+        }
+
+        .result-area {
+            background: #e3eef9;
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-top: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid #c6d9eb;
+        }
+
+        .total-label {
+            font-weight: 600;
+            color: #1c4052;
+            font-size: 1rem;
+        }
+
+        .total-value {
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: #002b44;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid #285572;
+            color: #1b445d;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn:hover {
+            background: #1b445d;
+            color: white;
+            border-color: #1b445d;
+        }
+
+        hr {
+            border: 0.5px solid #c7d8e9;
+            margin: 14px 0 6px;
+        }
+
+        .note {
+            font-size: 0.8rem;
+            color: #476277;
+            margin-top: 4px;
+        }
+
+        .waiting-field {
+            transition: opacity 0.2s ease;
+        }
+    </style>
+</head>
+<body>
+<div class="calculator">
+    <h1>
+        🚖 Быстрый калькулятор
+        <span>стоимости</span>
+    </h1>
+    <div class="subtitle">Тариф, город, километраж и доп. услуги</div>
+
+    <!-- Переключатель тарифов -->
+    <div class="tariff-switch" id="tariffSwitch">
+        <button class="tariff-btn active" data-tariff="S">🟢 Тариф S</button>
+        <button class="tariff-btn" data-tariff="V">🔵 Тариф V</button>
+    </div>
+
+    <!-- Город -->
+    <div class="form-group">
+        <label>🏙️ Город</label>
+        <select id="citySelect">
+            <option value="moscow">Москва</option>
+            <option value="petersburg" selected>Санкт-Петербург</option>
+        </select>
+    </div>
+
+    <!-- Блок с выбором километража: выпадающий список (1-12) ИЛИ ручной ввод n -->
+    <div class="form-group" id="kmBlock">
+        <label>🛣️ Выезд на МКАД / КАД</label>
+        <div class="km-row">
+            <div class="km-select-wrap" id="kmSelectWrap">
+                <select id="kmSelect">
+                    <option value="0">-- км за МКАД/КАД --</option>
+                    <!-- динамически заполним 1-12 -->
+                </select>
+                <div class="mutual-hint">📏 1 км = 80 ₽</div>
+            </div>
+            <div class="km-input-wrap">
+                <input type="number" id="ringRoadInput" value="0" min="0" step="1" placeholder="n (1n зависит от тарифа)">
+                <div class="mutual-hint" id="ringHint">🔢 1n = 1 200 ₽</div>
+            </div>
+        </div>
+        <div class="note" id="kmMutualNote" style="margin-top: 8px; font-style: italic;">
+            ⚡ Используйте что-то одно: либо километры (1–12), либо число n. Они взаимоисключают друг друга.
+        </div>
+    </div>
+
+    <!-- Платное ожидание (только для S) -->
+    <div class="form-group waiting-field" id="waitingBlock">
+        <label>⏳ Платное ожидание (S) — стоимость в ₽</label>
+        <input type="number" id="waitingInput" value="0" min="0" step="1" placeholder="Введите сумму, например 500">
+        <div class="note">Только для тарифа S. Введите нужную стоимость ожидания.</div>
+    </div>
+
+    <!-- Дополнительные услуги с счетчиками -->
+    <div class="form-group">
+        <label>📦 Дополнительные услуги</label>
+        <div class="services-grid">
+            <!-- Провоз багажа в салоне -->
+            <div class="service-item">
+                <div class="service-info">
+                    <span>🧳 Провоз багажа в салоне</span>
+                    <span class="service-price">500 ₽/шт.</span>
+                </div>
+                <div class="counter">
+                    <button type="button" class="decr-btn" data-service="baggage">−</button>
+                    <span class="count-display" id="baggageCount">0</span>
+                    <button type="button" class="incr-btn" data-service="baggage">+</button>
+                </div>
+            </div>
+            <!-- Провоз животного -->
+            <div class="service-item">
+                <div class="service-info">
+                    <span>🐾 Провоз животного</span>
+                    <span class="service-price">500 ₽/шт.</span>
+                </div>
+                <div class="counter">
+                    <button type="button" class="decr-btn" data-service="animal">−</button>
+                    <span class="count-display" id="animalCount">0</span>
+                    <button type="button" class="incr-btn" data-service="animal">+</button>
+                </div>
+            </div>
+            <!-- Детское кресло -->
+            <div class="service-item">
+                <div class="service-info">
+                    <span>👶 Детское кресло</span>
+                    <span class="service-price">400 ₽/шт.</span>
+                </div>
+                <div class="counter">
+                    <button type="button" class="decr-btn" data-service="childseat">−</button>
+                    <span class="count-display" id="childseatCount">0</span>
+                    <button type="button" class="incr-btn" data-service="childseat">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="button-panel">
+        <button class="btn" id="calcWithVatBtn">
+            <span>🧾</span> Рассчитать с НДС (5%)
+        </button>
+        <button class="btn btn-outline" id="calcWithoutVatBtn">
+            <span>📋</span> Без НДС
+        </button>
+    </div>
+
+    <div class="result-area" id="resultBlock">
+        <div>
+            <div class="total-label">Итоговая стоимость</div>
+            <div class="total-value" id="totalDisplay">0 ₽</div>
+        </div>
+        <button class="copy-btn" id="copyResultBtn">
+            <span>📋</span> Копировать
+        </button>
+    </div>
+    <div style="font-size:0.75rem; color:#405e73; margin-top: 8px; text-align: right;">
+        НДС 5% применяется только для расчёта с НДС
+    </div>
+</div>
+
+<script>
+    (function() {
+        // --- Конфигурация тарифов ---
+        const TARIFFS = {
+            S: {
+                name: 'S',
+                basePriceMoscow: 3300,
+                basePricePetersburg: 2450,
+                ringPricePerN: 1200,
+                hasKmSelect: true,
+                hasWaiting: true,
+            },
+            V: {
+                name: 'V',
+                basePriceMoscow: 8800,
+                basePricePetersburg: 6500,
+                ringPricePerN: 2200,     // для Москвы
+                ringPricePerNPiter: 1600, // для Петербурга
+                hasKmSelect: false,
+                hasWaiting: false,
+            }
+        };
+
+        // Общие константы
+        const KM_PRICE_PER_KM = 80;
+        const BAGGAGE_PRICE = 500;
+        const ANIMAL_PRICE = 500;
+        const CHILD_SEAT_PRICE = 400;
+        const VAT_RATE = 0.05;
+
+        // --- Состояние ---
+        let currentTariff = 'S';
+
+        // --- DOM элементы ---
+        const tariffButtons = document.querySelectorAll('.tariff-btn');
+        const citySelect = document.getElementById('citySelect');
+        const kmSelect = document.getElementById('kmSelect');
+        const kmSelectWrap = document.getElementById('kmSelectWrap');
+        const kmBlock = document.getElementById('kmBlock');
+        const kmMutualNote = document.getElementById('kmMutualNote');
+        const ringRoadInput = document.getElementById('ringRoadInput');
+        const ringHint = document.getElementById('ringHint');
+        const waitingBlock = document.getElementById('waitingBlock');
+        const waitingInput = document.getElementById('waitingInput');
+
+        const baggageCountSpan = document.getElementById('baggageCount');
+        const animalCountSpan = document.getElementById('animalCount');
+        const childseatCountSpan = document.getElementById('childseatCount');
+
+        const calcWithVatBtn = document.getElementById('calcWithVatBtn');
+        const calcWithoutVatBtn = document.getElementById('calcWithoutVatBtn');
+        const totalDisplay = document.getElementById('totalDisplay');
+        const copyResultBtn = document.getElementById('copyResultBtn');
+
+        let currentTotal = 0;
+        let currentIncludesVat = false;
+
+        // --- Заполнение км ---
+        function populateKmSelect() {
+            kmSelect.innerHTML = '<option value="0">-- км за МКАД/КАД --</option>';
+            for (let i = 1; i <= 12; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `${i} км (${i * KM_PRICE_PER_KM} ₽)`;
+                kmSelect.appendChild(option);
+            }
+            kmSelect.value = '0';
+        }
+        populateKmSelect();
+
+        // --- Обновление подсказки для n ---
+        function updateRingHint() {
+            const city = citySelect.value;
+            let priceForN;
+            if (currentTariff === 'S') {
+                priceForN = TARIFFS.S.ringPricePerN;
+            } else {
+                priceForN = (city === 'moscow') ? TARIFFS.V.ringPricePerN : TARIFFS.V.ringPricePerNPiter;
+            }
+            ringHint.textContent = `🔢 1n = ${priceForN.toLocaleString('ru-RU')} ₽`;
+        }
+
+        // --- Получение цен ---
+        function getBasePrice() {
+            const city = citySelect.value;
+            if (currentTariff === 'S') {
+                return city === 'moscow' ? TARIFFS.S.basePriceMoscow : TARIFFS.S.basePricePetersburg;
+            } else {
+                return city === 'moscow' ? TARIFFS.V.basePriceMoscow : TARIFFS.V.basePricePetersburg;
+            }
+        }
+
+        function getRingRoadPricePerN() {
+            const city = citySelect.value;
+            if (currentTariff === 'S') {
+                return TARIFFS.S.ringPricePerN;
+            } else {
+                return city === 'moscow' ? TARIFFS.V.ringPricePerN : TARIFFS.V.ringPricePerNPiter;
+            }
+        }
+
+        // --- Взаимоисключение км и n (только для S) ---
+        function updateMutualExclusion() {
+            if (currentTariff !== 'S') {
+                // Для V км нет, поэтому просто разблокируем n
+                ringRoadInput.disabled = false;
+                if (kmSelect) kmSelect.disabled = true;
+                return;
+            }
+
+            const kmValue = parseInt(kmSelect.value, 10) || 0;
+            const ringRaw = ringRoadInput.value.trim();
+            const ringNumber = (ringRaw !== '' && !isNaN(parseInt(ringRaw, 10))) ? parseInt(ringRaw, 10) : 0;
+
+            if (kmValue > 0) {
+                ringRoadInput.disabled = true;
+                ringRoadInput.value = 0;
+            } else if (ringNumber > 0) {
+                kmSelect.disabled = true;
+                kmSelect.value = '0';
+            } else {
+                ringRoadInput.disabled = false;
+                kmSelect.disabled = false;
+            }
+        }
+
+        // Обработчики км/н
+        kmSelect.addEventListener('change', function() {
+            if (currentTariff !== 'S') return;
+            const kmVal = parseInt(kmSelect.value, 10) || 0;
+            if (kmVal > 0) {
+                ringRoadInput.disabled = true;
+                ringRoadInput.value = 0;
+            } else {
+                const ringNum = parseInt(ringRoadInput.value, 10) || 0;
+                if (ringNum > 0) {
+                    updateMutualExclusion();
+                } else {
+                    ringRoadInput.disabled = false;
+                    kmSelect.disabled = false;
+                }
+            }
+        });
+
+        ringRoadInput.addEventListener('input', function() {
+            if (currentTariff !== 'S') return;
+            const rawValue = ringRoadInput.value.trim();
+            const ringNum = (rawValue !== '' && !isNaN(parseInt(rawValue, 10))) ? parseInt(rawValue, 10) : 0;
+            if (ringNum > 0) {
+                kmSelect.disabled = true;
+                kmSelect.value = '0';
+            } else {
+                const kmVal = parseInt(kmSelect.value, 10) || 0;
+                if (kmVal > 0) {
+                    ringRoadInput.disabled = true;
+                    ringRoadInput.value = 0;
+                } else {
+                    ringRoadInput.disabled = false;
+                    kmSelect.disabled = false;
+                }
+            }
+            if (rawValue !== '' && !isNaN(parseInt(rawValue,10)) && parseInt(rawValue,10) < 0) {
+                ringRoadInput.value = 0;
+            }
+        });
+
+        ringRoadInput.addEventListener('blur', function() {
+            let val = parseInt(ringRoadInput.value, 10);
+            if (isNaN(val) || val < 0) ringRoadInput.value = 0;
+            if (currentTariff === 'S') updateMutualExclusion();
+        });
+
+        // --- Счетчики услуг ---
+        function getServiceCount(type) {
+            const span = document.getElementById(type + 'Count');
+            return parseInt(span.textContent, 10) || 0;
+        }
+        function setServiceCount(type, count) {
+            const span = document.getElementById(type + 'Count');
+            count = Math.max(0, Math.min(99, count));
+            span.textContent = count;
+        }
+        function incrementService(type) {
+            setServiceCount(type, getServiceCount(type) + 1);
+        }
+        function decrementService(type) {
+            const c = getServiceCount(type);
+            if (c > 0) setServiceCount(type, c - 1);
+        }
+
+        document.querySelectorAll('.incr-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                incrementService(btn.dataset.service);
+            });
+        });
+        document.querySelectorAll('.decr-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                decrementService(btn.dataset.service);
+            });
+        });
+
+        // --- Вычисления ---
+        function getKmAmount() {
+            if (currentTariff !== 'S') return 0;
+            const kmVal = parseInt(kmSelect.value, 10) || 0;
+            return kmVal * KM_PRICE_PER_KM;
+        }
+
+        function getRingRoadAmount() {
+            if (currentTariff === 'S' && ringRoadInput.disabled) return 0;
+            let n = parseInt(ringRoadInput.value, 10);
+            if (isNaN(n) || n < 0) return 0;
+            return n * getRingRoadPricePerN();
+        }
+
+        function getWaitingAmount() {
+            if (currentTariff !== 'S') return 0;
+            let val = parseInt(waitingInput.value, 10);
+            if (isNaN(val) || val < 0) return 0;
+            return val;
+        }
+
+        function getAdditionalServicesTotal() {
+            return getServiceCount('baggage') * BAGGAGE_PRICE +
+                getServiceCount('animal') * ANIMAL_PRICE +
+                getServiceCount('childseat') * CHILD_SEAT_PRICE;
+        }
+
+        function calculateBaseTotal() {
+            return getBasePrice() + getKmAmount() + getRingRoadAmount() + getWaitingAmount() + getAdditionalServicesTotal();
+        }
+
+        function formatRub(amount) {
+            return amount.toLocaleString('ru-RU') + ' ₽';
+        }
+
+        function updateDisplay(total, includesVat) {
+            currentTotal = total;
+            currentIncludesVat = includesVat;
+            totalDisplay.textContent = formatRub(total);
+        }
+
+        function handleWithVat() {
+            updateDisplay(Math.round(calculateBaseTotal() * (1 + VAT_RATE)), true);
+        }
+
+        function handleWithoutVat() {
+            updateDisplay(calculateBaseTotal(), false);
+        }
+
+        function copyToClipboard() {
+            if (currentTotal === undefined || currentTotal === null) {
+                alert('Сначала рассчитайте стоимость.');
+                return;
+            }
+            navigator.clipboard.writeText(currentTotal.toString()).then(() => {
+                const orig = copyResultBtn.innerHTML;
+                copyResultBtn.innerHTML = '<span>✅</span> Скопировано!';
+                copyResultBtn.disabled = true;
+                setTimeout(() => {
+                    copyResultBtn.innerHTML = orig;
+                    copyResultBtn.disabled = false;
+                }, 1800);
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = currentTotal.toString();
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                alert('Скопировано: ' + currentTotal + ' ₽');
+            });
+        }
+
+        // --- Переключение тарифов и видимость элементов ---
+        function applyTariffUI() {
+            const isS = currentTariff === 'S';
+
+            // Километры (выпадающий список) только для S
+            if (kmSelectWrap) kmSelectWrap.style.display = isS ? '' : 'none';
+            if (kmMutualNote) kmMutualNote.style.display = isS ? '' : 'none';
+
+            // Если не S, сбрасываем км и разблокируем n
+            if (!isS) {
+                kmSelect.value = '0';
+                kmSelect.disabled = true;
+                ringRoadInput.disabled = false;
+            } else {
+                kmSelect.disabled = false;
+                updateMutualExclusion();
+            }
+
+            // Платное ожидание
+            if (waitingBlock) {
+                waitingBlock.style.display = isS ? '' : 'none';
+            }
+            if (!isS) {
+                waitingInput.value = 0;
+            }
+
+            updateRingHint();
+        }
+
+        function setTariff(tariff) {
+            currentTariff = tariff;
+            tariffButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tariff === tariff);
+            });
+            applyTariffUI();
+        }
+
+        tariffButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.dataset.tariff !== currentTariff) {
+                    setTariff(btn.dataset.tariff);
+                }
+            });
+        });
+
+        citySelect.addEventListener('change', () => {
+            updateRingHint();
+            if (currentTariff === 'S') updateMutualExclusion();
+        });
+
+        // Кнопки расчёта
+        function sanitizeBeforeCalc() {
+            if (currentTariff === 'S') {
+                if (ringRoadInput.disabled) ringRoadInput.value = 0;
+                else {
+                    let v = parseInt(ringRoadInput.value,10);
+                    if (isNaN(v) || v<0) ringRoadInput.value=0;
+                }
+                if (kmSelect.disabled) kmSelect.value='0';
+            } else {
+                let v = parseInt(ringRoadInput.value,10);
+                if (isNaN(v) || v<0) ringRoadInput.value=0;
+            }
+            let w = parseInt(waitingInput.value,10);
+            if (isNaN(w) || w<0) waitingInput.value = 0;
+            if (currentTariff === 'S') updateMutualExclusion();
+        }
+
+        calcWithVatBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            sanitizeBeforeCalc();
+            handleWithVat();
+        });
+
+        calcWithoutVatBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            sanitizeBeforeCalc();
+            handleWithoutVat();
+        });
+
+        copyResultBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            copyToClipboard();
+        });
+
+        // Инициализация
+        window.addEventListener('DOMContentLoaded', () => {
+            ringRoadInput.value = 0;
+            waitingInput.value = 0;
+            setTariff('S');
+            handleWithoutVat();
+        });
+
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') e.preventDefault();
+            });
+        });
+
+    })();
+</script>
+</body>
+</html>
